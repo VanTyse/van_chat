@@ -1,0 +1,49 @@
+.notification-container {
+    position: fixed;
+    right: -100%;
+    top: 20px;
+    width: 300px;
+    padding: 30px;
+    border-radius: 1rem;
+    z-index: 5000;
+    transition: all .4s ease-in-out;
+}
+
+.notification-container .notification {
+    position: relative;
+}
+
+.notification-container .bar {
+    height: 4px;
+    position: relative;
+    top: -29px;
+    left: -18px;
+    width: 0;
+    transition: width 3s ease-in-out;
+}
+
+.notification-container.warning {
+    background-color: rgb(241, 143, 143);
+    color: rgb(207, 7, 7);
+}
+
+.notification-container.show {
+    right: 20px;
+}
+
+.notification-container.success {
+    color: rgb(8, 156, 8);
+    background-color: rgb(152, 240, 152);
+}
+
+.notification-container.success .bar {
+    background-color: rgb(8, 53, 8);
+}
+
+.notification-container.warning .bar {
+    background-color: rgb(131, 9, 9);
+}
+
+.notification-container.show .bar {
+    width: calc(100% + 38px);
+}
