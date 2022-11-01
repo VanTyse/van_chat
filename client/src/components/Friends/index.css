@@ -7,15 +7,43 @@
 }
 
 .friends-container .friends-list-items {
-    max-height: calc(100vh - 110px);
+    height: calc(100vh - 110px);
     overflow-y: auto;
 }
 
-.friends-container .friends-list-items .no-friends {
+.no-friends {
     height: calc(100vh - 190px);
     display: flex;
     align-items: center;
     justify-content: center;
+    max-width: 400px;
+    margin: 0 auto;
+    
+}
+
+.no-mutual-friends {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-mutual-friends h5 {
+    border: 1px solid var(--main-color);
+    border-radius: .4rem;
+    background-color: #f4f4fc;
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+}
+
+.no-friends  h4 {
+    border: 1px solid var(--main-color);
+    border-radius: .4rem;
+    background-color: #f4f4fc;
+    width: 100%;
+    padding: 30px;
+    text-align: center;
 }
 
 .friends-container .friends-list-item {

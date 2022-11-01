@@ -3,15 +3,12 @@ require('dotenv').config()
 
 const authenticationMiddleware = async (req, res, next) => {
         const {authorization} = req.headers;
-        console.log(authorization)
         if (!authorization) return res.status(401).json({msg: 'You are unauthorized to access this route'})
 
         const schema = authorization.split(' ')[0]
-        console.log(schema)
         if (schema !== 'Bearer') return res.status(401).json({msg: 'You are unauthorized to access this route'})
 
         const token = authorization.split(' ')[1]
-        console.log(`${token}`);
         if (!token) return res.status(401).json({msg: 'You are unauthorized to access this route'})
 
         try{

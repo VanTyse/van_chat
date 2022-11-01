@@ -1,0 +1,65 @@
+.introduction-container {
+    position: fixed;
+    height: 100vh;
+    background: rgba(0, 0, 0, .1);
+    top: -100vh;
+    left: 0;
+    width: 100vw;
+    z-index: 20;
+    transition: top 1s ease-in-out;
+}
+
+.introduction-container.show-intro {
+    top: 0;
+}
+
+.introduction-container .introduction {
+    position: absolute;
+    max-height: 80vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: .4rem;   
+    background-color: var(--light-main-color);
+    padding: 30px;
+    width: 90%;
+    max-width: 800px;
+    overflow-y: auto;
+    transition: transform .5s ease-in-out 1s;
+
+}
+
+.introduction h3 {
+    font-size: .9rem;
+    font-weight: 400;
+}
+
+.introduction-container.show-intro .introduction {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.introduction h3 {
+    margin: 30px 0;
+}
+
+.introduction-container .close-btn {
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.introduction-container .close-btn:hover {
+    cursor: pointer;
+}
+
+.introduction-container .close-btn svg {
+    margin-left: -3px;
+}

@@ -12,7 +12,7 @@
 }
 
 .chat-container .chat-list .chat-list-items {
-    max-height: calc(100vh - 110px);
+    height: calc(100vh - 110px);
     overflow-y: auto;
 }
 
@@ -55,12 +55,24 @@
     margin-right: .5rem;
 }
 
+.chat-list-item .profile-pic img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 2rem;
+}
+
 .individual-chat .profile-pic {
     width: 50px;
     height: 50px;
     min-width: 50px;
     background-color: #D9D9D9;
     border-radius: 50%;
+}
+
+.individual-chat .profile-pic img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 3rem;
 }
 
 .individual-chat {
@@ -75,6 +87,22 @@
     overflow-y: auto;
     padding: 30px;
 }
+
+.chat-container .individual-chat .messages .no-message{
+    height: calc(100vh - 300px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.chat-container .individual-chat .messages .no-message h4 {
+    padding: 3rem;
+    border: 1px solid var(--main-color);
+    border-radius: .4rem;
+    background-color: #f4f4fc;
+}
+
 
 .chat-container .individual-chat form {
     position: absolute;
@@ -121,6 +149,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    z-index: -1;
 }
 
 .chat-container .individual-chat h3.name {
@@ -161,11 +190,20 @@
     display: none;
 }
 
+
+
 @media screen and (max-width: 700px) {
     .chat-container {
         display: block;
         position: relative;
     }
+
+    .chat-container .chat-list .chat-list-items {
+        max-height: calc(100vh - 130px);
+        min-height: calc(100vh - 130px);
+        overflow-y: auto;
+    }
+    
 
     .chat-container .individual-chat {
         position: absolute;

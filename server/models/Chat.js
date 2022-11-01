@@ -9,6 +9,18 @@ const chatSchema = new Schema({
     type: {
         type: String,
         enum: ['group', 'regular']
+    },
+
+    lastMessage: {
+        text: {
+            type: String,
+            default: ''
+        },
+
+        date: {
+            type: Schema.Types.Date,
+            default: null
+        }
     }
 })
 

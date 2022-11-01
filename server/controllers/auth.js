@@ -13,7 +13,6 @@ const loginController = async (req, res) => {
     const {name} = user
 
     const isPassword = await user.comparePassword(password)
-    console.log(isPassword);
 
     if (!isPassword) return res.status(401).json({msg: 'invalid email or password'})
     

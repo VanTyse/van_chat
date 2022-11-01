@@ -9,32 +9,59 @@ const getMessage = async (req, res) => {
     return res.status(200).json(message)
 }
 
-const getMessages = async (req, res) => {
-    const {chatOwner, recipient, chatID} = req.query
-    const messages = await Message.find({chatID})
-
-    if (!messages) return res.status(401).json({err: 'no message'})
-    return res.status(200).json(messages)
+const getMessages = async (chatId) => {
+    const messages = await Message.find({chatId})
+    console.log(messages)
+    if (!messages) return {err: 'No Messages'}
+    return {messages}
 }
 
-const createMessage = async (req, res) => {
-    const { text, chatID, from, to } = req.body
-    const {type} = await Chat.findOne({_id: chatID})
-    
+const createMessage = async ({text, chatId, from, to}) => {
+    const chat = await Chat.findOne({_id: chatId})
+    console.log(`text is ${text}`)
     let newMessage;
 
-    if (type === 'group') {
-        if ( !text || !chatID || !from ) return res.status(400).json({err: 'incomplete fields'})
-        newMessage = await Message.create({text, chatID, from});
+    if (chat.type === 'group') {
+        if ( !text || !chatId || !from ) return {msg: 'incomplete fields'}
+        newMessage = await Message.create({text, chatId, from});
+
+        chat.lastMessage = {
+            date: Date.now(),
+            text
+        }
+
+        await chat.save()
     }
 
-    if (type === 'regular') {
-        if ( !text || !chatID || !from || !to ) return res.status(400).json({err: 'incomplete fields'})
-        newMessage = await Message.create({text, chatID, from, to});
+    if (chat.type === 'regular') {
+        if ( !text || !chatId || !from || !to ) return {msg: 'incomplete fields'}
+        newMessage = await Message.create({text, chatId, from, to});
+
+        chat.lastMessage = {
+            date: Date.now(),
+            text
+        }
+
+        await chat.save()
     }
 
-    return res.status(200).json({msg: 'success', newMessage})
+    return { newMessage }
+}
+
+const messageSocketHandler = (socket) => {
+    socket.on('get-messages', async (chatId) => {
+        const {messages} = await getMessages(chatId)
+
+        socket.join(chatId)
+        socket.emit('load-messages', messages)
+
+        socket.on('send-message', async (chatId, message, from, to) => {
+            console.log(message)
+            const newMessage = await createMessage({text: message, chatId, from, to})
+            socket.broadcast.to(chatId).emit('receive-message', newMessage)
+        })
+    })
 }
 
 
-module.exports = {createMessage, getMessage, getMessages}
+module.exports = {createMessage, getMessage, getMessages, messageSocketHandler}

@@ -6,6 +6,8 @@ const createChat = async (req, res) => {
     const {type} = req.body
     const {personId} = req.query
     const members = [userId, personId]
+
+    if (!personId || !userId) return res.status(500).json({msg: 'one or both members not provided'})
     
     try {
         const newChat = await Chat.create({members, type})
@@ -25,4 +27,16 @@ const getChats = async (req, res) => {
     }
 }
 
-module.exports = {createChat, getChats}
+const getChat = async (req, res) => {
+    const {id: userId} = req.user
+    const {id: chatId} = req.params
+
+    try {
+        const chat = await Chat.findOne({_id: chatId}).where('members').in([userId])
+        return res.status(200).json({msg: 'successful', chat})
+    } catch (error) {
+        return res.status(500).json({msg: error.message})
+    }
+}
+
+module.exports = {createChat, getChats, getChat}

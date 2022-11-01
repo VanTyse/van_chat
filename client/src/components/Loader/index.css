@@ -1,0 +1,37 @@
+.loader {
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+circle {
+    fill: none;
+    stroke: url(#GradientColor);
+    stroke-dasharray: 100;
+    stroke-width: 5px;
+    transform-origin: center !important;
+    -webkit-animation: animate-circle 2s linear infinite;
+    -moz-animation: animate-circle 2s linear infinite;
+    -ms-animation: animate-circle 2s linear infinite;
+    -o-animation: animate-circle 2s linear infinite;
+    animation: animate-circle 2s linear infinite;
+}
+
+@keyframes animate-circle {
+    from {
+      -ms-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -ms-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }

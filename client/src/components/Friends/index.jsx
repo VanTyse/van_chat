@@ -2,15 +2,13 @@ import './index.css'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useContext, useState, useEffect } from 'react'
 import { AppContext } from '../../context'
-import { UnathourizedRoute } from '../../components'
+import { UnathourizedRoute, Loader } from '../../components'
 import axios from 'axios'
 
 export const Friends = () => {
-    const navigate = useNavigate()
-    const pathname = useLocation().pathname
     const {user, token} = useContext(AppContext)
     const [friends, setFriends] = useState([]);
-    
+    const [friendsIsLoading, setFriendsIsLoading] = useState(true);
 
     const getFriends = async () => {
         try {
@@ -20,6 +18,7 @@ export const Friends = () => {
                 }
             })            
             setFriends(friends)
+            setFriendsIsLoading(false)
         } catch (error) {
             console.log(error.response)
         }
@@ -35,14 +34,14 @@ export const Friends = () => {
 
     return (
         <div className="friends-container">
-            <FriendsList friends={friends} getFriends={getFriends}/>
+            <FriendsList friends={friends} getFriends={getFriends} friendsIsLoading={friendsIsLoading}/>
             <IndividualPerson getFriends={getFriends}/>
         </div>
     )
 }
 
 
-const FriendsList = ({getFriends, friends}) => {
+const FriendsList = ({getFriends, friends, friendsIsLoading}) => {
     
     useEffect(() => {
         getFriends()
@@ -53,10 +52,11 @@ const FriendsList = ({getFriends, friends}) => {
         <div className="friends-list">
             <h3><em>Friends</em></h3>
             <div className="friends-list-items">{
+                friendsIsLoading ? <Loader/> :
                 friends.length > 0 ? friends.map(friend => {
                     const {_id, about, name, profilePic} = friend;
                     return <FriendListItem id={_id} key={_id} name={name} about={about} profilePic={profilePic}/>
-                }) : <h4 className='no-friends'>No friends...</h4>
+                }) : <div className='no-friends'><h4>No friends...</h4></div>
             }
             </div>
         </div>
@@ -92,6 +92,8 @@ export const IndividualPerson = ({getFriends}) => {
     const [person, setPerson] = useState(null)
     const [mutualFriends, setMutualFriends] = useState([]);
 
+    const [personIsLoading, setPersonIsLoading] = useState(true);
+
     const goBack = () => {
         navigate(`/${baseRoute}`)
     }
@@ -100,6 +102,7 @@ export const IndividualPerson = ({getFriends}) => {
         try {
             const {data: {user}} = await axios(`/api/v1/user/${param}`)            
             setPerson(user)
+            setPersonIsLoading(false)
         } catch (error) {
             console.log(error.response)
         }
@@ -149,6 +152,21 @@ export const IndividualPerson = ({getFriends}) => {
         }
     }
 
+    const createChat = async () => {
+        try {
+            const {data: {chat}} = await axios.post(`/api/v1/chat?personId=${param}`, {type: 'regular'}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            console.log(chat)
+            dispatch({type: 'SET_NOTIFICATION', payload: {type: 'success', show: true, content: 'Chat Created'}})
+            navigate(`/chat/${chat._id}`)
+        } catch (error) {
+            console.log(error.response)
+        }
+    }
+
     useEffect(() => {
         if (!param) return
         getPerson() 
@@ -159,13 +177,14 @@ export const IndividualPerson = ({getFriends}) => {
     if (!param) {
         return (
             <div>
-                <h3 style={{marginBottom : '40vh', fontSize: '1.5rem'}}>Person</h3>
-                <h4 style={{textAlign: 'center'}}>No person selected</h4>
+                <h3 style={{fontSize: '1.5rem'}}>Person</h3>
+                <div className="no-friends"><h4>No person selected</h4></div>
             </div>
         )
     }
     return (
         <div className="person">{
+            personIsLoading ? <Loader/> :
             person ? <div>
                 <div className="top">
                     <div className="back-arrow" onClick={goBack}>
@@ -182,7 +201,7 @@ export const IndividualPerson = ({getFriends}) => {
                     <h4 className="name">{person.name}</h4>
                     <div className="options">
                         <div className="chat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-right-text" viewBox="0 0 16 16">
+                            <svg onClick={createChat} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-right-text" viewBox="0 0 16 16">
                                 <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
                                 <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
                             </svg>
@@ -209,13 +228,13 @@ export const IndividualPerson = ({getFriends}) => {
                             const {_id, profilePic, name} = friend;
                             return <MutualFriend key={_id} id={_id} removeFriend={removeFriend} profilePic={profilePic} name={name}/>
                         }) :
-                        <h5 style={{fontWeight: '300'}}>No mutual Friends!!</h5>
+                        <div className='no-mutual-friends'><h5>No mutual Friends!!</h5></div>
                     }
                     </div>
                 </div>
             </div> :
             <div>
-                Loading...
+                Something went wrong
             </div>
         }
         </div>

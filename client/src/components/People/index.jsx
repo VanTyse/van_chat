@@ -3,12 +3,11 @@ import { IndividualPerson } from '../Friends'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useContext, useState } from 'react'
 import { AppContext } from '../../context'
-import { UnathourizedRoute } from '../../components'
+import { UnathourizedRoute, Loader } from '../../components'
 import axios from 'axios'
 
 export const People = () => {
     const navigate = useNavigate()
-    const pathname = useLocation().pathname
     const {user} = useContext(AppContext)
 
     if (!user) {
@@ -29,6 +28,7 @@ export const People = () => {
 const PeopleList = () => {
     const [people, setPeople] = useState([]);
     const {user, token} = useContext(AppContext)
+    const [peopleIsLoading, setPeopleIsLoading] = useState(true)
     const getPeople = async () => {
         try {
             const {data: {users}} = await axios('/api/v1/user', {
@@ -37,6 +37,7 @@ const PeopleList = () => {
                 }
             })            
             setPeople(users)
+            setPeopleIsLoading(false)
         } catch (error) {
             console.log(error.response)
         }
@@ -50,10 +51,12 @@ const PeopleList = () => {
         <div className="person">
             <h3><em>People</em></h3>
             <div className="people-list-items">{
-                people.length > 0 && people.map(person => {
+                (peopleIsLoading) ? <Loader/> :
+                people.length > 0 ? people.map(person => {
                     const {_id, about, name, profilePic} = person;
                     return <PeopleListItem id={_id} key={_id} name={name} about={about} profilePic={profilePic}/>
-                })
+                }) :
+                <h4 className='no-friends'>No people...</h4>
             }
             </div>
         </div>

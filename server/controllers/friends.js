@@ -50,12 +50,10 @@ const getFriend = async (req, res) => {
 const getFriends = async (req, res) => {
     const {id} = req.user;
     const {getMutualFriends, friendId} = req.query
-    console.log(getMutualFriends, friendId);
 
     try{
         let friends;
         if (getMutualFriends && friendId) {
-            console.log('jjj')
             friends = await User.find({friends: {$all : [id, friendId]}})
         }
         else 
