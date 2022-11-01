@@ -11,7 +11,6 @@ const getMessage = async (req, res) => {
 
 const getMessages = async (chatId) => {
     const messages = await Message.find({chatId})
-    console.log(messages)
     if (!messages) return {err: 'No Messages'}
     return {messages}
 }
