@@ -15,7 +15,7 @@ const {messageSocketHandler} = require('./controllers/message')
 const server = createServer(app);
 
 app.use(express.json())
-app.use(express.static(path.join(__dirname, '../client/dist/')))
+app.use(express.static(path.join(__dirname, '/dist')))
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/message', messageRoutes)
 app.use('/api/v1/user', userRoutes)
@@ -23,7 +23,7 @@ app.use('/api/v1/friend', friendRoutes)
 app.use('/api/v1/chat', chatRoutes)
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+    res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
 const {Server} = require('socket.io');
