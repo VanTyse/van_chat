@@ -12,7 +12,7 @@
     width: 90%;
     max-width: 800px;
     overflow-y: auto;
-    transition: all .3s ease-in-out 1s;
+    transition: all .3s ease-in-out .13s;
 }
 
 .introduction.show {

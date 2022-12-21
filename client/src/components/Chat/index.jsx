@@ -183,7 +183,7 @@ const IndividualChat = () => {
     const [socket, setSocket] = useState()
 
     useEffect(() => {
-        const s = io(`http://localhost:5001`)
+        const s = io(`https://vanchat.up.railway.app/`)
         setSocket(s)
 
         return () => {
