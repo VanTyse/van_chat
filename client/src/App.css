@@ -46,6 +46,10 @@ body {
     margin: 0 auto;
 }
 
+button:hover {
+    cursor: pointer;
+}
+
 @media screen and (max-width: 992px) {
     .app .desktop{
         display: block;

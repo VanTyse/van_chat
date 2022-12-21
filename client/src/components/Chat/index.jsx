@@ -39,17 +39,16 @@ const ChatList = () => {
                 }
             })
             setChatListLoading(false)
-            setChats(chats)
+            setChats([...chats])
         } catch (error) {
             console.log(error.response)
             setChatListLoading(false)
         }
     }
-
+    
     useEffect(() => {
         getChats()
     }, [])
-
 
     return (
         <div className="chat-list">
@@ -57,8 +56,8 @@ const ChatList = () => {
             <div className="chat-list-items">{
                 chatListLoading ? <Loader/> :
                 chats.length > 0 ? chats.map(chat => {
-                    const {_id, members, lastMessage: {text, date}} = chat;
-                    return <ChatListItem id={_id} key={_id} members={members} createdAt={date} lastMessage={text}/>
+                    const {_id} = chat;
+                    return <ChatListItem id={_id} key={_id}/>
                 }):
                 <div className='no-friends'><h4>No chats...</h4></div>
             }
@@ -67,12 +66,15 @@ const ChatList = () => {
     )
 }
 
-const ChatListItem = ({id, members, createdAt, lastMessage}) => {
+const ChatListItem = ({id}) => {
     const [trimmedMessage, setTrimmedMessage] = useState('Tap or click to message')
     const [date, setDate] = useState('');
     const [name, setName] = useState('');
+    const [members, setMembers] = useState([])
+    const [createdAt, setCreatedAt] = useState('')
+    const [lastMessage, setLastMessage] = useState('')
     const [profilePic, setProfilePic] = useState(null)
-    const {user} = useContext(AppContext)
+    const {user, token} = useContext(AppContext)
 
     useEffect(() => {
         if (createdAt){
@@ -80,7 +82,32 @@ const ChatListItem = ({id, members, createdAt, lastMessage}) => {
             setDate(`${day}/${month}`)
         }
         trimMessage();
+    }, [createdAt, lastMessage])
+
+    useEffect(() => {
+        const listener = () => {
+            getChat()
+        }
+        window.addEventListener('message-sent', listener)
+        return () => window.removeEventListener('message-sent', listener)
     }, [])
+
+    const getChat = async () => {
+        try {
+            const { data: {chat} } = await axios(`/api/v1/chat/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            })
+            const {members, lastMessage: {text, date}} = chat;
+            setCreatedAt(date)
+            setLastMessage(text)
+            setMembers(members)
+        } catch (error) {
+            console.log(error.response)
+
+        }
+    }
     
     const getPerson = async () => {
         if (members.length > 2) return console.log('more than 2 members');
@@ -114,11 +141,13 @@ const ChatListItem = ({id, members, createdAt, lastMessage}) => {
     }
 
     useEffect(() => {
+        if (members.length > 1)
         getPerson()
-    }, [])
+    }, [members])
 
-    
-    
+    useEffect(() => {
+        getChat()
+    }, []) 
 
     return (
         <div className="chat-list-item" onClick={selectChat}>
@@ -171,31 +200,30 @@ const IndividualChat = () => {
     }, [socket, chatId])
 
     useEffect(() => {
-        if(socket == null) return
-
+        if(socket == null || !chatId) return
         const listener = (message) => {
             const {newMessage} = message
-            setMessages([...messages, newMessage])
+            setMessages(messages => [...messages, newMessage])
+            const event = new CustomEvent('message-sent');
+            window.dispatchEvent(event)
         }
 
         socket.on('receive-message', listener)
 
         return () => socket.off('receive-message', listener)
-    }, [socket])
+    }, [socket, chatId])
 
     const goBack = () => {
         navigate('/chat')
     }
 
     const getChat = async () => {
-        console.log(`get chat called`)
         try {
             const {data: {chat: {members}}} = await axios(`/api/v1/chat/${chatId}`, {
                 headers: {
                     authorization: `Bearer ${token}`
                 }
             })
-            // console.log(data)
             setMembers(members)
         } catch (error) {
             console.log(error.response);
@@ -225,6 +253,7 @@ const IndividualChat = () => {
         e.preventDefault()
         const from = user._id;
         const to = recipientId
+        if (!(from && to && message && chatId )) return console.log('something went wrong')
         socket.emit('send-message', chatId, message, from, to)        
         const newMessage = {
             from,
@@ -235,7 +264,6 @@ const IndividualChat = () => {
         setMessages([...messages, newMessage])
         setNewMesssageText('')
     }
-
 
     useEffect(() => {
         if (!chatId) return

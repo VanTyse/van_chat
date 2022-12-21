@@ -1,0 +1,22 @@
+.mask {
+    top: -100vh;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, .5);
+    transition-duration: .512s;
+    position: fixed;
+    z-index: 3;
+    left: 0;
+}
+
+.mask:hover {
+    cursor: pointer;
+}
+
+.pull-mask {
+    top: -100vh;
+}
+
+.show-mask {
+    top: 0;
+}

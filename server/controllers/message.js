@@ -17,7 +17,6 @@ const getMessages = async (chatId) => {
 
 const createMessage = async ({text, chatId, from, to}) => {
     const chat = await Chat.findOne({_id: chatId})
-    console.log(`text is ${text}`)
     let newMessage;
 
     if (chat.type === 'group') {
@@ -51,12 +50,15 @@ const messageSocketHandler = (socket) => {
     socket.on('get-messages', async (chatId) => {
         const {messages} = await getMessages(chatId)
 
+        // console.log(messages, chatId)
+
         socket.join(chatId)
         socket.emit('load-messages', messages)
 
         socket.on('send-message', async (chatId, message, from, to) => {
-            console.log(message)
+            // console.log(message, chatId, from, to)
             const newMessage = await createMessage({text: message, chatId, from, to})
+            // console.log(newMessage)
             socket.broadcast.to(chatId).emit('receive-message', newMessage)
         })
     })
